@@ -1,0 +1,658 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Penny: Budget Buddy</title>
+<meta name="description" content="Payday-to-payday budgeting for iPhone with a kind piggy-bank pal. Log spending, build a streak, grow savings goals. No bank login. Private iPhone beta." />
+<meta property="og:title" content="Penny: Budget Buddy" />
+<meta property="og:description" content="Budget from payday to payday with a piggy pal. No bank login, your data stays on your iPhone." />
+<meta property="og:image" content="https://montsnelson.github.io/penny-site/welcome/icon.png" />
+<meta property="og:url" content="https://montsnelson.github.io/penny-site/welcome/" />
+<meta property="og:type" content="website" />
+<meta name="twitter:card" content="summary" />
+<meta name="theme-color" content="#0B3525" />
+<link rel="icon" href="icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #FFFCF5;
+    --surface: #FFFFFF;
+    --surface-2: #F4EFE3;
+    --ink: #0B3525;
+    --text: #1C2A23;
+    --muted: #55645C;
+    --green: #17794A;
+    --green-soft: #DDF3E6;
+    --pink: #FBA9BE;
+    --pink-soft: #FFE6EC;
+    --gold: #F8C63A;
+    --gold-soft: #FFF3CC;
+    --line: #E8E1D2;
+    --on-green: #FFFFFF;
+    --hero-bg: #0B3525;
+    --hero-text: #FFFCF5;
+    --shadow: 0 18px 40px -18px rgba(11, 53, 37, .35);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #08140F;
+      --surface: #11211A;
+      --surface-2: #172B22;
+      --ink: #EAF6EF;
+      --text: #E4EEE8;
+      --muted: #A3B5AB;
+      --green: #4ADE80;
+      --green-soft: #143222;
+      --pink-soft: #3A1E27;
+      --gold-soft: #3A3115;
+      --line: #23392F;
+      --on-green: #04210F;
+      --hero-bg: #04100B;
+      --shadow: 0 18px 40px -18px rgba(0, 0, 0, .7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #08140F; --surface: #11211A; --surface-2: #172B22; --ink: #EAF6EF; --text: #E4EEE8;
+    --muted: #A3B5AB; --green: #4ADE80; --green-soft: #143222; --pink-soft: #3A1E27; --gold-soft: #3A3115;
+    --line: #23392F; --on-green: #04210F; --hero-bg: #04100B; --shadow: 0 18px 40px -18px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 17px/1.6 "Nunito", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased; overflow-x: hidden;
+  }
+  h1, h2, h3, .display { font-family: "Fredoka", "Nunito", system-ui, sans-serif; color: var(--ink); letter-spacing: -.01em; }
+  h2 { font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 0 0 12px; }
+  h3 { font-size: 21px; margin: 0 0 6px; }
+  p { margin: 0 0 12px; }
+  a { color: var(--green); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+  .eyebrow { font-weight: 800; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; color: var(--green); margin-bottom: 10px; }
+  section { padding: 80px 0; }
+  .lead { font-size: 19px; color: var(--muted); max-width: 620px; }
+
+  /* Hero */
+  .hero { background: var(--hero-bg); color: var(--hero-text); padding: 28px 0 0; position: relative; overflow: hidden; }
+  .hero h1 { color: var(--hero-text); }
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-family: "Fredoka"; font-weight: 600; font-size: 20px; color: var(--hero-text); text-decoration: none; }
+  .brand img { width: 38px; height: 38px; border-radius: 10px; }
+  .pill { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 800; padding: 6px 12px; border-radius: 999px; background: rgba(248, 198, 58, .16); color: var(--gold); border: 1px solid rgba(248, 198, 58, .35); white-space: nowrap; }
+  .pill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); animation: pulse 1.8s infinite; }
+  @keyframes pulse { 50% { opacity: .3; } }
+  .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: end; padding-top: 56px; }
+  .hero h1 { font-size: clamp(44px, 8vw, 84px); line-height: .98; margin: 0 0 20px; font-weight: 700; }
+  .hero h1 .hl { color: var(--pink); }
+  .hero .sub { font-size: 20px; color: #CFE3D8; max-width: 520px; margin-bottom: 28px; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 22px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 20px; border-radius: 16px; font-weight: 800; font-size: 16px; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; border: 0; cursor: pointer; font-family: inherit; }
+  .btn:hover { transform: translateY(-2px); }
+  .btn svg { width: 20px; height: 20px; flex: none; }
+  .btn-primary { background: var(--pink); color: #3B1A26; box-shadow: 0 8px 0 -2px #E0668B; }
+  .btn-ghost { background: rgba(255, 252, 245, .08); color: var(--hero-text); border: 1.5px solid rgba(255, 252, 245, .25); }
+  .trust { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 14px; color: #A9C7B8; padding-bottom: 56px; }
+  .trust span::before { content: "✓ "; color: var(--gold); font-weight: 800; }
+
+  /* Phone */
+  .phone-stage { position: relative; display: flex; justify-content: center; }
+  .phone {
+    width: 300px; background: #FFFCF5; border-radius: 44px 44px 0 0; padding: 14px 14px 0;
+    border: 10px solid #1A1A1A; border-bottom: 0; position: relative; color: #1C2A23; box-shadow: 0 -10px 60px rgba(251, 169, 190, .25);
+  }
+  .phone .notch { width: 96px; height: 26px; background: #1A1A1A; border-radius: 0 0 16px 16px; margin: -14px auto 10px; }
+  .scr-head { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 800; margin-bottom: 10px; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 800; padding: 4px 9px; border-radius: 999px; }
+  .chip.streak { background: #FFF3CC; color: #8A5A00; }
+  .chip.lvl { background: #DDF3E6; color: #17794A; }
+  .bubble-row { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 10px; }
+  .bubble-row .mini-penny { width: 64px; flex: none; }
+  .bubble { background: #fff; border: 1px solid #EADFD0; border-radius: 16px 16px 16px 4px; padding: 8px 10px; font-size: 12.5px; line-height: 1.35; font-weight: 600; }
+  .left-card { background: #17794A; color: #fff; border-radius: 20px; padding: 14px; margin-bottom: 10px; }
+  .left-card small { opacity: .85; font-weight: 700; font-size: 12px; }
+  .left-card .big { font-family: "Fredoka"; font-size: 34px; font-weight: 600; line-height: 1.1; }
+  .bar { height: 8px; background: rgba(255,255,255,.25); border-radius: 99px; overflow: hidden; margin-top: 8px; }
+  .bar i { display: block; height: 100%; background: #F8C63A; border-radius: 99px; }
+  .row-card { background: #fff; border: 1px solid #EADFD0; border-radius: 16px; padding: 10px 12px; margin-bottom: 8px; font-size: 13px; font-weight: 700; }
+  .row-card .top { display: flex; justify-content: space-between; }
+  .row-card .bar { background: #EFE8DA; height: 7px; }
+  .row-card .bar i.g { background: #17794A; }
+  .row-card .bar i.p { background: #EE7F9E; }
+  .log-btn { background: #FBA9BE; color: #3B1A26; text-align: center; border-radius: 14px; padding: 11px; font-weight: 800; font-size: 14px; margin-top: 4px; }
+  .float-coin { position: absolute; width: 58px; height: 58px; animation: floaty 4s ease-in-out infinite; }
+  .float-coin.c1 { left: 2%; top: 18%; }
+  .float-coin.c2 { right: 0; top: 52%; width: 42px; height: 42px; animation-delay: -2s; }
+  .pts-pop { position: absolute; right: 6%; top: 8%; background: var(--gold); color: #3B1A26; font-weight: 800; font-family: "Fredoka"; padding: 8px 14px; border-radius: 14px; transform: rotate(6deg); box-shadow: 0 10px 0 -3px #C98F12; animation: floaty 3.4s ease-in-out infinite; }
+  @keyframes floaty { 50% { transform: translateY(-12px) rotate(-4deg); } }
+
+  /* Ticker */
+  .ticker { background: var(--gold); color: #3B1A26; overflow: hidden; white-space: nowrap; font-family: "Fredoka"; font-weight: 600; font-size: 20px; padding: 12px 0; }
+  .ticker div { display: inline-block; animation: tick 30s linear infinite; }
+  .ticker span { margin: 0 22px; }
+  @keyframes tick { to { transform: translateX(-50%); } }
+
+  /* Features */
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 40px; }
+  .feat { background: var(--surface); border: 1px solid var(--line); border-radius: 24px; padding: 24px; box-shadow: var(--shadow); }
+  .feat .ic { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; font-size: 24px; margin-bottom: 14px; }
+  .feat p { color: var(--muted); font-size: 16px; margin: 0; }
+  .ic.g { background: var(--green-soft); } .ic.p { background: var(--pink-soft); } .ic.y { background: var(--gold-soft); }
+  .feat.wide { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: center; }
+
+  /* Payday tool */
+  .tool { background: var(--surface-2); border-radius: 32px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
+  .tool label { font-weight: 800; display: block; margin-bottom: 10px; color: var(--ink); }
+  .days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .days button { aspect-ratio: 1; border-radius: 12px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); font: 700 15px "Nunito"; cursor: pointer; transition: all .12s; }
+  .days button:hover { border-color: var(--green); }
+  .days button[aria-pressed="true"] { background: var(--green); color: var(--on-green); border-color: var(--green); }
+  .result { background: var(--surface); border-radius: 24px; padding: 28px; text-align: center; border: 1px solid var(--line); }
+  .result .n { font-family: "Fredoka"; font-size: 84px; line-height: 1; color: var(--green); font-weight: 700; }
+  .result .period { font-weight: 700; color: var(--muted); margin-top: 8px; }
+  .result .note { font-size: 14px; color: var(--muted); margin-top: 14px; }
+
+  /* Game */
+  .game { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: center; }
+  .points { display: grid; gap: 10px; }
+  .pt { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 14px 18px; font-weight: 700; }
+  .pt b { font-family: "Fredoka"; font-size: 20px; color: var(--ink); background: var(--gold-soft); padding: 2px 12px; border-radius: 12px; white-space: nowrap; }
+  .streaks { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .streaks span { background: var(--pink-soft); color: var(--ink); font-weight: 800; font-size: 14px; padding: 6px 12px; border-radius: 999px; }
+
+  /* Meet Penny */
+  .meet { background: var(--pink-soft); border-radius: 32px; padding: 48px 40px; display: grid; grid-template-columns: 280px 1fr; gap: 40px; align-items: center; }
+  .meet-penny { width: 260px; cursor: pointer; user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .2s; }
+  .meet-penny:active { transform: scale(.94); }
+  .meet-penny.bounce { animation: hop .5s ease; }
+  @keyframes hop { 30% { transform: translateY(-22px) rotate(-5deg); } 60% { transform: translateY(0) rotate(3deg); } }
+  .say { background: var(--surface); border-radius: 22px 22px 22px 6px; padding: 18px 22px; font-size: 19px; font-weight: 700; color: var(--ink); min-height: 92px; border: 1px solid var(--line); }
+  .moods { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .moods button { font: 800 14px "Nunito"; padding: 8px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer; }
+  .moods button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* Privacy */
+  .privacy { background: var(--hero-bg); color: var(--hero-text); border-radius: 32px; padding: 48px 40px; }
+  .privacy h2 { color: var(--hero-text); }
+  .privacy .lead { color: #B9D3C6; }
+  .no-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 28px; }
+  .no { background: rgba(255,252,245,.06); border: 1px solid rgba(255,252,245,.14); border-radius: 20px; padding: 18px; }
+  .no strong { display: block; font-family: "Fredoka"; font-size: 19px; color: var(--gold); margin-bottom: 4px; }
+  .no span { font-size: 15px; color: #C7DCD1; }
+
+  /* Plans */
+  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 36px; }
+  .plan { background: var(--surface); border: 1px solid var(--line); border-radius: 26px; padding: 28px; }
+  .plan.pro { border: 2px solid var(--green); position: relative; }
+  .plan .tag { position: absolute; top: -13px; right: 22px; background: var(--green); color: var(--on-green); font-weight: 800; font-size: 12px; padding: 4px 12px; border-radius: 999px; }
+  .plan ul { list-style: none; padding: 0; margin: 16px 0 0; }
+  .plan li { padding: 7px 0 7px 30px; position: relative; border-top: 1px dashed var(--line); }
+  .plan li::before { content: ""; position: absolute; left: 0; top: 11px; width: 18px; height: 18px; border-radius: 50%; background: var(--green-soft) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M5 10.5l3 3 7-7' stroke='%2317794A' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/14px no-repeat; }
+  .plan .price { font-family: "Fredoka"; font-size: 34px; color: var(--ink); }
+
+  /* FAQ */
+  .faq { max-width: 760px; margin: 32px auto 0; }
+  details { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 4px 20px; margin-bottom: 10px; }
+  summary { cursor: pointer; font-weight: 800; padding: 14px 0; list-style: none; color: var(--ink); display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; font-family: "Fredoka"; font-size: 22px; line-height: 1; color: var(--green); }
+  details[open] summary::after { content: "–"; }
+  details p { color: var(--muted); padding-bottom: 10px; }
+
+  /* Final CTA */
+  .final { text-align: center; padding: 90px 0 60px; }
+  .final .penny-lg { width: 150px; margin: 0 auto 10px; display: block; }
+  .socials { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 26px; }
+  .soc { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 16px; font-weight: 800; text-decoration: none; background: var(--ink); color: var(--bg); transition: transform .15s; }
+  .soc:hover { transform: translateY(-2px); }
+  .soc svg { width: 20px; height: 20px; }
+  footer { border-top: 1px solid var(--line); padding: 28px 0 40px; font-size: 14px; color: var(--muted); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 10px 24px; justify-content: space-between; }
+
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 880px) {
+    section { padding: 60px 0; }
+    .hero-grid, .tool, .game, .meet { grid-template-columns: minmax(0, 1fr); }
+    .phone { width: min(300px, 100%); }
+    .pill { white-space: normal; text-align: center; }
+    .hero-grid { padding-top: 36px; gap: 8px; }
+    .features { grid-template-columns: 1fr; }
+    .feat.wide { grid-column: auto; grid-template-columns: 1fr; }
+    .no-list { grid-template-columns: 1fr 1fr; }
+    .plans { grid-template-columns: 1fr; }
+    .tool, .meet, .privacy { padding: 28px 20px; border-radius: 26px; }
+    .meet { text-align: center; }
+    .meet-penny { width: 200px; margin: 0 auto; }
+    .moods { justify-content: center; }
+    .trust { padding-bottom: 36px; }
+  }
+  @media (max-width: 420px) {
+    .phone { width: min(272px, 100%); }
+    .no-list { grid-template-columns: 1fr; }
+    .btn { width: 100%; justify-content: center; }
+    .pill { font-size: 12px; }
+    .float-coin.c1 { left: -8px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Reusable Penny + coin artwork, drawn from the app's own SVG -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="pBody" cx="38%" cy="26%" r="85%"><stop offset="0" stop-color="#FFD3DE"/><stop offset=".55" stop-color="#FBA9BE"/><stop offset="1" stop-color="#EE7F9E"/></radialGradient>
+    <linearGradient id="pEar" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F58FAB"/><stop offset="1" stop-color="#E96F92"/></linearGradient>
+    <linearGradient id="pLeg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EE7F9E"/><stop offset="1" stop-color="#DD6187"/></linearGradient>
+    <linearGradient id="pSnout" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA3BA"/><stop offset="1" stop-color="#EF7799"/></linearGradient>
+    <radialGradient id="pBlush"><stop offset="0" stop-color="#F0688F" stop-opacity=".55"/><stop offset="1" stop-color="#F0688F" stop-opacity="0"/></radialGradient>
+    <linearGradient id="pGloss" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".75"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+    <radialGradient id="cGold" cx="36%" cy="30%" r="80%"><stop offset="0" stop-color="#FFE58A"/><stop offset=".6" stop-color="#F8C63A"/><stop offset="1" stop-color="#E0A21C"/></radialGradient>
+    <symbol id="coin" viewBox="0 0 30 30">
+      <circle cx="15" cy="16" r="13" fill="#C98F12"/><circle cx="15" cy="14.8" r="12.5" fill="url(#cGold)"/>
+      <path d="M18.6 10.6a3.6 3.6 0 0 0-6.8 1.7v6.2M9.8 14.8h6.6M10 18.5h9.2" stroke="#8A5A00" stroke-width="2" stroke-linecap="round" fill="none"/>
+    </symbol>
+  </defs>
+</svg>
+
+<template id="pennyTpl">
+  <svg viewBox="0 0 120 120" role="img" aria-label="Penny the piggy bank">
+    <g class="sparkles" style="display:none">
+      <path d="M22 22 l3 6 l6 3 l-6 3 l-3 6 l-3 -6 l-6 -3 l6 -3 Z" fill="#F8C63A"/>
+      <path d="M100 18 l2 4 l4 2 l-4 2 l-2 4 l-2 -4 l-4 -2 l4 -2 Z" fill="#F8C63A"/>
+    </g>
+    <path class="zzz" style="display:none" d="M92 12 h10 l-10 12 h10" stroke="#EE7F9E" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <ellipse class="wave" style="display:none" cx="108" cy="48" rx="7" ry="10" fill="url(#pLeg)" transform="rotate(25 108 48)"/>
+    <path d="M13 68 q-9 -3 -6 -10 q4 -6 9 -1" stroke="#EE7F9E" stroke-width="4.2" stroke-linecap="round" fill="none"/>
+    <rect x="31" y="94" width="16" height="19" rx="7" fill="url(#pLeg)"/>
+    <rect x="73" y="94" width="16" height="19" rx="7" fill="url(#pLeg)"/>
+    <path d="M25 42 C20 26 23 15 31 14 C40 15 47 24 51 33 Z" fill="url(#pEar)"/>
+    <path d="M95 42 C100 26 97 15 89 14 C80 15 73 24 69 33 Z" fill="url(#pEar)"/>
+    <path d="M29 37 C27 27 28 21 32 20 C37 21 41 26 44 32 Z" fill="#FBB4C6" opacity=".8"/>
+    <path d="M91 37 C93 27 92 21 88 20 C83 21 79 26 76 32 Z" fill="#FBB4C6" opacity=".8"/>
+    <ellipse cx="60" cy="66" rx="47" ry="40" fill="url(#pBody)"/>
+    <ellipse cx="46" cy="42" rx="24" ry="11" fill="url(#pGloss)" opacity=".55" transform="rotate(-14 46 42)"/>
+    <rect x="49" y="30.6" width="22" height="5.6" rx="2.8" fill="#fff" opacity=".35"/>
+    <rect x="49" y="29.6" width="22" height="5.6" rx="2.8" fill="#6B2B40"/>
+    <circle cx="29" cy="71" r="10" fill="url(#pBlush)"/>
+    <circle cx="91" cy="71" r="10" fill="url(#pBlush)"/>
+    <g class="brows" style="display:none">
+      <path d="M41 46.5 Q47 42.5 53 45.5" stroke="#3B1A26" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+      <path d="M79 46.5 Q73 42.5 67 45.5" stroke="#3B1A26" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+    </g>
+    <g class="eyes-open">
+      <ellipse cx="47.5" cy="55" rx="4.6" ry="5.4" fill="#3B1A26"/><ellipse cx="72.5" cy="55" rx="4.6" ry="5.4" fill="#3B1A26"/>
+      <circle cx="49.2" cy="52.8" r="1.7" fill="#fff"/><circle cx="74.2" cy="52.8" r="1.7" fill="#fff"/>
+    </g>
+    <g class="eyes-happy" style="display:none">
+      <path d="M42.5 56.5 Q47.5 49 52.5 56.5" stroke="#3B1A26" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+      <path d="M67.5 56.5 Q72.5 49 77.5 56.5" stroke="#3B1A26" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    </g>
+    <g class="eyes-sleepy" style="display:none">
+      <path d="M42.5 55 Q47.5 59.5 52.5 55" stroke="#3B1A26" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+      <path d="M67.5 55 Q72.5 59.5 77.5 55" stroke="#3B1A26" stroke-width="3.2" stroke-linecap="round" fill="none"/>
+    </g>
+    <ellipse cx="60" cy="73.6" rx="15.5" ry="11" fill="#E0668B" opacity=".5"/>
+    <ellipse cx="60" cy="72.4" rx="15.5" ry="11" fill="url(#pSnout)"/>
+    <ellipse cx="60" cy="66.5" rx="10" ry="3.2" fill="#fff" opacity=".28"/>
+    <ellipse cx="55" cy="72.8" rx="2.5" ry="3.6" fill="#7A2F48"/>
+    <ellipse cx="65" cy="72.8" rx="2.5" ry="3.6" fill="#7A2F48"/>
+    <path class="m-smile" d="M52.5 86 Q60 93 67.5 86" stroke="#3B1A26" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+    <path class="m-cheer" style="display:none" d="M52 85.5 Q60 95 68 85.5 Z" fill="#3B1A26"/>
+    <ellipse class="m-sleepy" style="display:none" cx="60" cy="87.5" rx="3" ry="2.5" fill="#3B1A26"/>
+    <path class="m-soft" style="display:none" d="M54 86.5 Q60 90.5 66 86.5" stroke="#3B1A26" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+  </svg>
+</template>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <a class="brand" href="#"><img src="icon.png" alt="" />Penny</a>
+      <span class="pill"><span class="dot"></span>Private iPhone beta</span>
+    </div>
+
+    <div class="hero-grid">
+      <div>
+        <h1>Budget from <span class="hl">payday</span> to payday.</h1>
+        <p class="sub">Penny is a budgeting app for iPhone with a kind piggy-bank pal. Log what you spend, build a streak, and watch your savings goals grow. No bank login needed.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://www.tiktok.com/@penny.budget" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.7 5.7 0 1 0 4.9 5.7V9.1a7.3 7.3 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg>
+            Follow for launch
+          </a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <div class="trust"><span>Free to start</span><span>No bank connection</span><span>No Penny account</span><span>Made in the UK, in £</span></div>
+      </div>
+
+      <div class="phone-stage">
+        <svg class="float-coin c1" aria-hidden="true"><use href="#coin"/></svg>
+        <svg class="float-coin c2" aria-hidden="true"><use href="#coin"/></svg>
+        <div class="pts-pop">+10 pts</div>
+        <div class="phone" aria-label="Example of Penny's home screen with sample figures">
+          <div class="notch"></div>
+          <div class="scr-head">
+            <span>Hi there 👋</span>
+            <span><span class="chip streak">🔥 12</span> <span class="chip lvl">Lv 4</span></span>
+          </div>
+          <div class="bubble-row">
+            <div class="mini-penny" data-penny="happy"></div>
+            <div class="bubble">Logged for today, and you’re within budget. Nice one!</div>
+          </div>
+          <div class="left-card">
+            <small>Left until payday · 9 days</small>
+            <div class="big">£412.60</div>
+            <div class="bar"><i style="width:62%"></i></div>
+          </div>
+          <div class="row-card"><div class="top"><span>Needs</span><span>£640 / £900</span></div><div class="bar"><i class="g" style="width:71%"></i></div></div>
+          <div class="row-card"><div class="top"><span>Wants</span><span>£148 / £300</span></div><div class="bar"><i class="p" style="width:49%"></i></div></div>
+          <div class="row-card"><div class="top"><span>🏖️ Weekend away</span><span>£180 / £400</span></div><div class="bar"><i class="g" style="width:45%"></i></div></div>
+          <div class="log-btn">+ Log expense</div>
+          <div style="height:16px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true">
+  <div>
+    <span>🐷 Log it</span><span>🔥 Keep your streak</span><span>🪙 Earn points</span><span>🎯 Hit your goal</span><span>💷 Payday to payday</span><span>🔒 Stays on your phone</span>
+    <span>🐷 Log it</span><span>🔥 Keep your streak</span><span>🪙 Earn points</span><span>🎯 Hit your goal</span><span>💷 Payday to payday</span><span>🔒 Stays on your phone</span>
+  </div>
+</div>
+
+<main>
+  <section id="how">
+    <div class="wrap">
+      <div class="reveal">
+        <div class="eyebrow">Everything in the app</div>
+        <h2>Budgeting that feels like a game.</h2>
+        <p class="lead">Most budget apps make you feel guilty. Penny makes logging a quick daily habit, rewards you for showing up, and keeps everything private.</p>
+      </div>
+
+      <div class="features">
+        <div class="feat reveal">
+          <div class="ic g">📅</div>
+          <h3>Payday-to-payday budgets</h3>
+          <p>Paid on the 25th? Your budget starts on the 25th. Monthly, weekly, fortnightly or four-weekly pay all work.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic y">💷</div>
+          <h3>Take-home estimate</h3>
+          <p>Enter your salary before tax and Penny estimates UK take-home after Income Tax and National Insurance, with optional pension and student loan. Scotland included.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic p">⚡</div>
+          <h3>Log in seconds</h3>
+          <p>Pick a category, type the amount, done. Your usuals sit one tap away. Attach a photo of a receipt if you like.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic g">🧺</div>
+          <h3>Needs and wants</h3>
+          <p>Rent, bills, groceries, essentials and fun money, grouped so you can see what’s left in each part of your budget.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic p">🙌</div>
+          <h3>“I spent nothing today”</h3>
+          <p>A no-spend day counts too. One tap checks you in and keeps your streak going.</p>
+        </div>
+        <div class="feat reveal">
+          <div class="ic y">🔔</div>
+          <h3>Friendly reminders</h3>
+          <p>Gentle nudges at a time you choose, with quiet hours and a payday heads-up. If you’ve already logged, Penny stays quiet.</p>
+        </div>
+        <div class="feat wide reveal">
+          <div>
+            <div class="ic p">🎯</div>
+            <h3>Savings goals you can see grow</h3>
+            <p>Name it (a weekend away, a new laptop, a rainy-day pot), set a target, and log each amount you put aside. Penny shows what’s left to go and celebrates when you get there.</p>
+          </div>
+          <div class="row-card" style="background:var(--surface-2);border-color:var(--line);color:var(--text);padding:18px">
+            <div class="top" style="font-size:16px"><span>🏖️ Weekend away</span><span>45%</span></div>
+            <div class="bar" style="height:12px;margin:12px 0"><i class="g" style="width:45%;background:var(--green)"></i></div>
+            <div class="top" style="font-weight:600;color:var(--muted);font-size:14px"><span>£180 saved</span><span>£220 to go</span></div>
+          </div>
+        </div>
+        <div class="feat reveal">
+          <div class="ic g">🌗</div>
+          <h3>Built for everyone</h3>
+          <p>Light and dark mode, large text, VoiceOver labels and Reduce Motion support.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="tool reveal">
+        <div>
+          <div class="eyebrow">Try it</div>
+          <h2>When’s your payday?</h2>
+          <p class="lead" style="margin-bottom:20px">Tap the day you usually get paid. Penny builds your budget around it instead of the calendar month.</p>
+          <label id="dayLabel">Day of the month</label>
+          <div class="days" role="group" aria-labelledby="dayLabel" id="days"></div>
+        </div>
+        <div class="result" aria-live="polite">
+          <div class="n" id="daysLeft">–</div>
+          <div style="font-weight:800;color:var(--ink);font-size:20px" id="daysWord">days until payday</div>
+          <div class="period" id="period"></div>
+          <div class="note">That’s your budget period. Spend less than you planned and Penny gives you points.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap game">
+      <div class="reveal">
+        <div class="eyebrow">Points, streaks and levels</div>
+        <h2>Show up, score points.</h2>
+        <p class="lead">Your streak stays alive just by logging, not by being perfect. Points never reward spending more, only paying attention.</p>
+        <div class="streaks" aria-label="Streak bonus milestones">
+          <span>🔥 3 days +15</span><span>🔥 7 days +50</span><span>🔥 14 days +100</span><span>🔥 30 days +200</span><span>🔥 100 days +500</span><span>🔥 365 days +2,000</span>
+        </div>
+      </div>
+      <div class="points reveal">
+        <div class="pt"><span>📝 Log your first entry of the day</span><b>+10</b></div>
+        <div class="pt"><span>✅ A category finishes on or under budget</span><b>+20</b></div>
+        <div class="pt"><span>🏆 Whole budget period on track</span><b>+100</b></div>
+        <div class="pt"><span>🐷 Put money towards a goal</span><b>+5</b></div>
+        <div class="pt"><span>🎉 Reach a savings goal</span><b>+150</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="meet reveal">
+        <div class="meet-penny" id="bigPenny" data-penny="waving" role="button" tabindex="0" aria-label="Tap Penny to change her mood"></div>
+        <div>
+          <div class="eyebrow">Meet Penny</div>
+          <h2>A piggy pal who’s always on your side.</h2>
+          <div class="say" id="say" aria-live="polite"></div>
+          <div class="moods" id="moods"></div>
+          <p style="margin-top:14px;font-size:14px;color:var(--muted)">Over budget? Penny never tells you off. Fresh start on payday.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="privacy reveal">
+        <div class="eyebrow" style="color:var(--gold)">Private by design</div>
+        <h2>Your money stays your business.</h2>
+        <p class="lead">You choose what to log. Everything is kept on your iPhone. Delete it all from Settings any time.</p>
+        <div class="no-list">
+          <div class="no"><strong>No bank login</strong><span>Nothing to connect. You log what you choose.</span></div>
+          <div class="no"><strong>No account</strong><span>No sign-up, email or password.</span></div>
+          <div class="no"><strong>No tracking</strong><span>No ads or analytics in the app.</span></div>
+          <div class="no"><strong>Works offline</strong><span>Your data is saved on your phone.</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="reveal" style="text-align:center">
+        <div class="eyebrow">Free, with an optional Pro</div>
+        <h2>Everything you need is free.</h2>
+      </div>
+      <div class="plans">
+        <div class="plan reveal">
+          <h3>Penny</h3>
+          <div class="price">Free</div>
+          <ul>
+            <li>Payday-to-payday budgets</li>
+            <li>UK take-home pay estimate</li>
+            <li>Unlimited expense logging and receipt photos</li>
+            <li>Streaks, points and levels</li>
+            <li>One savings goal</li>
+            <li>Reminders and Penny’s pep talks</li>
+          </ul>
+        </div>
+        <div class="plan pro reveal">
+          <span class="tag">Coming soon</span>
+          <h3>Penny Pro</h3>
+          <div class="price">Extras</div>
+          <ul>
+            <li>Everything in Free</li>
+            <li>As many savings goals as you like</li>
+            <li>Charts and a monthly report</li>
+            <li>Home screen widget</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="reveal" style="text-align:center">
+        <div class="eyebrow">Questions</div>
+        <h2>Good to know</h2>
+      </div>
+      <div class="faq">
+        <details class="reveal"><summary>Can I download it yet?</summary><p>Penny is in private iPhone beta right now. Follow us on TikTok or YouTube and we’ll post the App Store link the moment it’s live.</p></details>
+        <details class="reveal"><summary>Do I need to connect my bank?</summary><p>No. You log expenses yourself, and Penny keeps your entries on your device.</p></details>
+        <details class="reveal"><summary>Does it move money for me?</summary><p>No. Move your money yourself, then log what you set aside so Penny can show your progress.</p></details>
+        <details class="reveal"><summary>Does it work on Android?</summary><p>We’re testing the iPhone version first.</p></details>
+        <details class="reveal"><summary>Is the take-home figure exact?</summary><p>It’s an estimate for planning, based on the current UK tax year. Your payslip is always the accurate figure.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap reveal">
+      <div class="penny-lg" data-penny="cheering"></div>
+      <h2>Be first when Penny launches.</h2>
+      <p class="lead" style="margin:0 auto">Short demos, budgeting tips and the App Store link, as soon as it’s ready.</p>
+      <div class="socials">
+        <a class="soc" href="https://www.tiktok.com/@penny.budget" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 5.8A4.3 4.3 0 0 1 15.5 3h-3.1v12.4a2.6 2.6 0 1 1-2.6-2.6c.3 0 .5 0 .8.1V9.7a5.7 5.7 0 1 0 4.9 5.7V9.1a7.3 7.3 0 0 0 4.3 1.4V7.4a4.3 4.3 0 0 1-3.2-1.6z"/></svg>
+          TikTok @penny.budget
+        </a>
+        <a class="soc" href="https://www.youtube.com/@pennybudgetbuddy" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23 7.2a3 3 0 0 0-2.1-2.1C19 4.6 12 4.6 12 4.6s-7 0-8.9.5A3 3 0 0 0 1 7.2 31 31 0 0 0 .5 12a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 8.9.5 8.9.5s7 0 8.9-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8zM9.7 15.1V8.9l5.8 3.1-5.8 3.1z"/></svg>
+          YouTube @pennybudgetbuddy
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Penny: Budget Buddy. Figures shown are examples. Penny is a budgeting tool, not financial advice.</span>
+    <span><a href="https://montsnelson.github.io/penny-site/#support">Support</a> · <a href="https://montsnelson.github.io/penny-site/#privacy">Privacy policy</a></span>
+  </div>
+</footer>
+
+<script>
+  // Penny artwork, moods match the app (src/components/penny.tsx)
+  const tpl = document.getElementById('pennyTpl');
+  function setMood(host, mood) {
+    let svg = host.querySelector('svg');
+    if (!svg) { host.appendChild(tpl.content.cloneNode(true)); svg = host.querySelector('svg'); }
+    const show = (sel, on) => svg.querySelectorAll(sel).forEach(el => el.style.display = on ? '' : 'none');
+    show('.sparkles', mood === 'cheering');
+    show('.zzz', mood === 'sleepy');
+    show('.wave', mood === 'waving');
+    show('.brows', mood === 'supportive');
+    show('.eyes-happy', mood === 'happy' || mood === 'cheering');
+    show('.eyes-sleepy', mood === 'sleepy');
+    show('.eyes-open', mood === 'waving' || mood === 'supportive');
+    show('.m-smile', mood === 'happy' || mood === 'waving');
+    show('.m-cheer', mood === 'cheering');
+    show('.m-sleepy', mood === 'sleepy');
+    show('.m-soft', mood === 'supportive');
+  }
+  document.querySelectorAll('[data-penny]').forEach(el => setMood(el, el.dataset.penny));
+
+  // Meet Penny: real lines from the app (src/domain/mascot.ts)
+  const lines = [
+    { mood: 'waving', label: '👋 First hello', text: 'Hi, I’m Penny! Log your first expense and I’ll keep track of the rest.' },
+    { mood: 'happy', label: '😊 Logged today', text: 'Logged for today, and you’re within budget. Nice one! See you tomorrow.' },
+    { mood: 'cheering', label: '🎉 Streak bonus', text: '7 days in a row! That’s a bonus 50 points.' },
+    { mood: 'sleepy', label: '😴 Streak at risk', text: 'Your 12-day streak is safe until midnight. Log anything today to keep it going.' },
+    { mood: 'supportive', label: '🤗 Over budget', text: 'You’re over budget this time, and that’s okay. It happens to everyone. Fresh start on payday.' },
+  ];
+  const big = document.getElementById('bigPenny'), say = document.getElementById('say'), moods = document.getElementById('moods');
+  let idx = 0;
+  function show(i) {
+    idx = i; const l = lines[i];
+    setMood(big, l.mood); say.textContent = l.text;
+    moods.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-pressed', j === i));
+    big.classList.remove('bounce'); void big.offsetWidth; big.classList.add('bounce');
+  }
+  lines.forEach((l, i) => {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = l.label;
+    b.addEventListener('click', () => show(i)); moods.appendChild(b);
+  });
+  const next = () => show((idx + 1) % lines.length);
+  big.addEventListener('click', next);
+  big.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); next(); } });
+  show(0);
+
+  // Payday picker
+  const daysEl = document.getElementById('days');
+  const fmt = d => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
+  function payDate(y, m, day) { const last = new Date(y, m + 1, 0).getDate(); return new Date(y, m, Math.min(day, last)); }
+  function pick(day) {
+    daysEl.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', +b.textContent === day));
+    const t = new Date(); t.setHours(0, 0, 0, 0);
+    let start = payDate(t.getFullYear(), t.getMonth(), day);
+    if (start > t) start = payDate(t.getFullYear(), t.getMonth() - 1, day);
+    const end = payDate(start.getFullYear(), start.getMonth() + 1, day);
+    const left = Math.round((end - t) / 86400000);
+    document.getElementById('daysLeft').textContent = left;
+    document.getElementById('daysWord').textContent = left === 1 ? 'day until payday' : 'days until payday';
+    const lastDay = new Date(end); lastDay.setDate(lastDay.getDate() - 1);
+    document.getElementById('period').textContent = 'Your period: ' + fmt(start) + ' to ' + fmt(lastDay);
+  }
+  for (let d = 1; d <= 28; d++) {
+    const b = document.createElement('button'); b.type = 'button'; b.textContent = d;
+    b.setAttribute('aria-label', 'Paid on day ' + d);
+    b.addEventListener('click', () => pick(d)); daysEl.appendChild(b);
+  }
+  pick(25);
+
+  // Scroll reveal
+  const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => {
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  }), { threshold: .12 }) : null;
+  document.querySelectorAll('.reveal').forEach(el => io ? io.observe(el) : el.classList.add('in'));
+</script>
+</body>
+</html>
